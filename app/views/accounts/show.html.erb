@@ -1,0 +1,41 @@
+<%= link_to 'Back', accounts_path %>
+
+<%= form_for(@account, :url => {action: :get_balance}) do |f| %>
+  <% if @account.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@account.errors.count, "error") %> prohibited this account from being saved:</h2>
+
+      <ul>
+      <% @account.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :app_id %>
+    <%= f.text_field :app_id, readonly: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :customer_id %>
+    <%= f.text_field :customer_id, readonly: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :account_no %>
+    <%= f.text_field :account_no, readonly: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :balance %>
+    <%= f.text_field :balance, readonly: true %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit 'get balance' %>
+  </div>
+
+
+<% end %>

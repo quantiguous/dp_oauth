@@ -23,8 +23,8 @@ class AccountsController < ApplicationController
     if request.get? 
       redirect_to @account
     else
-      if params[:access_token].nil?
-        uri = URI.parse('https://192.168.79.128/qg/sb/httpbin/oauth/authorize')
+      if session[:access_token].nil?
+        uri = URI.parse('https://192.168.79.137/qg/sb/httpbin/oauth/authorize')
         params = {response_type: :token, scope: '/httpbin', client_id: '2c2627db-46dc-4d66-848a-b481cb8399f9'}
         uri.query = URI.encode_www_form(params)
       
@@ -42,6 +42,23 @@ class AccountsController < ApplicationController
           end
         end
       else
+        uri = URI.parse('https://192.168.79.137/qg/sb/httpbin/uuid')
+        req = Net::HTTP::Get.new(uri.path)
+        req.add_field('X-IBM-Client-Id', '2c2627db-46dc-4d66-848a-b481cb8399f9')
+        req.add_field('Authorization', "Bearer #{session[:access_token]}")
+        
+        p "#{req}"        
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        res = http.request(req)
+        p "#{res}"
+        
+        if res.code == '200'
+          @account.balance = res.body.to_s
+        else
+          @account.errors.add(:base, "#{res.body} --- access_token : #{session[:access_token]}")
+        end
         render action: :show         
       end
     end
